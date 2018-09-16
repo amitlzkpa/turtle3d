@@ -47,12 +47,11 @@ function LState() {
 		let stateBuffer = [];
 		for (let i = 0; i < this.state.length; i++) {
 			let o = this.state[i];
-			stateBuffer.push(...this.ruleSet[o]);
+			stateBuffer.push(...this.ruleSet[o]());
 		}
 		this.state = stateBuffer;
 		this.iters++;
 	}
-
 
 
 	this.reset();
@@ -63,12 +62,28 @@ function LState() {
 
 
 
+function ABASys() {
+	this.axiom = ["A"];
+	this.ruleSet = 	{
+						"A": function() { return ["A", "B", "A"]},
+						"B": function() { return ["B", "B", "B"]}
+					}
+}
+
+
+function ThreeBasicSys() {
+	this.axiom = ["A"];
+	this.ruleSet = {"A": ["A", "B", "A"], "B": ["B", "B", "B"]};
+}
+
+
+
+
 function THREEapp() {
 
 	let camera, scene, renderer;
 
 	let lsys;
-	let ruleSet = {"A": ["A", "B", "A"], "B": ["B", "B", "B"]};
 	 
 	init();
 	animate();
@@ -79,7 +94,8 @@ function THREEapp() {
 		scene = new THREE.Scene();
 
 		lsys = new LState();
-		lsys.init(["A"], ruleSet);
+		let rSet = new ABASys();
+		lsys.init(rSet.axiom, rSet.ruleSet);
 
 		renderer = new THREE.WebGLRenderer( { antialias: true } );
 		renderer.setSize( window.innerWidth, window.innerHeight );
