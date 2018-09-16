@@ -47,7 +47,7 @@ function LState() {
 		let stateBuffer = [];
 		for (let i = 0; i < this.state.length; i++) {
 			let o = this.state[i];
-			stateBuffer.push(...this.ruleSet[o.lid](this.iters, o));
+			stateBuffer.push(...this.ruleSet[o.name](this.iters, o));
 		}
 		this.state = stateBuffer;
 		this.iters++;
@@ -72,30 +72,27 @@ function ABASys() {
 
 
 function ThreeBasicSys() {
-	var m = new THREE.MeshNormalMaterial({color: 0xfbfcaf});
+	var m = new THREE.MeshBasicMaterial( { color: "#FF0000" } );
 
 
 	this.axiom = () => 	{
-							let g = new THREE.BoxGeometry( 0.2, 0.2, 0.2 );
-						    let c = new THREE.Mesh( g, this.m );
-						    c.lid = "cube";
+						    let c = new THREE.Mesh( this.g, this.m );
+						    c.name = "cube";
 							return [c];
 						};
 
 	this.ruleSet = {};
 	this.ruleSet["cube"] = (i, parent) => 	{
 										let r = [];
-										let g = new THREE.BoxGeometry( 0.2, 0.2, 0.2 );
-									    let c = new THREE.Mesh( g, this.m );
+									    let c = new THREE.Mesh( new THREE.BoxGeometry( 0.2, 0.2, 0.2 ), this.m );
 									    c.position.x = parent.position.x + i/10;
 									    c.position.z = parent.position.z - i/10;
-										c.lid = "cube";
+										c.name = "cube";
 									    r.push(c);
-										g = new THREE.BoxGeometry( 0.2, 0.2, 0.2 );
-									    c = new THREE.Mesh( g, this.m );
+									    c = new THREE.Mesh( new THREE.BoxGeometry( 0.2, 0.2, 0.2 ), this.m );
 									    c.position.x = parent.position.x - i/10;
 									    c.position.z = parent.position.z + i/10;
-										c.lid = "cube";
+										c.name = "cube";
 									    r.push(c);
 										return r;
 									}
