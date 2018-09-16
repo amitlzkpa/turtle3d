@@ -61,7 +61,7 @@ function LState() {
 
 
 
-
+/*
 function ABASys() {
 	this.axiom = function() { return ["A"] };
 	this.ruleSet = 	{
@@ -69,6 +69,10 @@ function ABASys() {
 						"B": function() { return ["B", "B", "B"] }
 					}
 }
+*/
+
+
+
 
 
 function ThreeBasicSys() {
@@ -101,10 +105,20 @@ function ThreeBasicSys() {
 
 
 
+
+
 function THREEapp() {
 
 	let container = document.getElementById("app");
 	let btnStep = document.getElementById("step");
+
+	let chkBxRetainHistory = document.getElementById("rthistory");
+
+	chkBxRetainHistory.addEventListener( 'change', function() {
+		retainHistoryToggled(this.checked);
+	});
+
+
 
 	btnStep.addEventListener("mouseup", stepClicked);
 
@@ -112,6 +126,7 @@ function THREEapp() {
 	let controls;
 
 	let lsys, lobjs;
+	let retainHistory = false;
 	 
 	init();
 	animate();
@@ -133,7 +148,7 @@ function THREEapp() {
 		controls.update();
 		container.appendChild( renderer.domElement );
 	}
-	 
+	
 
 	function animate() {
 	    requestAnimationFrame( animate );
@@ -144,20 +159,41 @@ function THREEapp() {
 
 
 
+	// ----------------------------------
+
+
+
 	async function stepClicked(e) {
 		step();
 	}
 
 
+
+	async function retainHistoryToggled(val) {
+		retainHistory = val;
+		await render();
+	}
+
+
+
+	// ----------------------------------
+
+
+
 	async function step() {
-		scene.remove(lobjs);
-		lobjs = new THREE.Object3D();
 		await lsys.step();
+		await render();
+	}
+
+
+
+	async function render() {
+		if(!retainHistory) scene.remove(lobjs);
+		lobjs = new THREE.Object3D();
 		for (let i = 0; i < lsys.state.length; i++) {
 			lobjs.add(lsys.state[i]);
 		}
 		scene.add(lobjs);
-		// console.log(lobjs);
 	}
 
 }
