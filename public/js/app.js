@@ -21,26 +21,41 @@ window.addEventListener('load', () => {
 
 
 
-function LState(axiom, ruleSet, constants) {
+function LState() {
 
-	this.constants = constants;
-	this.iters = 0;
 
-	// should always be a list
-	this.state = axiom;
-	// map objects to generators
-	this.ruleSet = ruleSet;
+	this.reset = function() {
+		this.constants = null;
+		this.iters = -1;
+
+		// should always be a list
+		this.state = null;
+		// map objects to generators
+		this.ruleSet = null;
+	}
+
+
+	this.init = function(axiom, ruleSet, constants) {
+		this.constants = constants;
+		this.iters = 0;
+		this.state = axiom;
+		this.ruleSet = ruleSet;
+	}
 
 
 	this.step = async function () {
 		let stateBuffer = [];
 		for (let i = 0; i < this.state.length; i++) {
 			let o = this.state[i];
-			stateBuffer.push(...ruleSet[o]);
+			stateBuffer.push(...this.ruleSet[o]);
 		}
 		this.state = stateBuffer;
 		this.iters++;
 	}
+
+
+
+	this.reset();
 
 
 }
@@ -63,8 +78,8 @@ function THREEapp() {
 		camera.position.z = 1;
 		scene = new THREE.Scene();
 
-		lsys = new LState(["A"], ruleSet);
-		// console.log(lsys.state);
+		lsys = new LState();
+		lsys.init(["A"], ruleSet);
 
 		renderer = new THREE.WebGLRenderer( { antialias: true } );
 		renderer.setSize( window.innerWidth, window.innerHeight );
