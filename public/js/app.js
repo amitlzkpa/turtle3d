@@ -103,6 +103,11 @@ function ThreeBasicSys() {
 
 function THREEapp() {
 
+	let container = document.getElementById("app");
+	let btnStep = document.getElementById("step");
+
+	btnStep.addEventListener("mouseup", stepClicked);
+
 	let camera, scene, renderer;
 	let controls;
 
@@ -126,14 +131,21 @@ function THREEapp() {
 		renderer.setSize( window.innerWidth, window.innerHeight );
 		renderer.setClearColor(0xffffff);
 		controls.update();
-		document.body.appendChild( renderer.domElement );
+		container.appendChild( renderer.domElement );
 	}
 	 
+
 	function animate() {
 	    requestAnimationFrame( animate );
 	    controls.update();	 
 	    renderer.render( scene, camera );
 	 
+	}
+
+
+
+	async function stepClicked(e) {
+		step();
 	}
 
 
@@ -147,24 +159,6 @@ function THREEapp() {
 		scene.add(lobjs);
 		// console.log(lobjs);
 	}
-
-
-	$(document).mousedown(function() {
-	    switch (event.which) {
-	        case 1:
-	            // alert('Left Mouse button pressed.');
-	            break;
-	        case 2:
-	            // alert('Middle Mouse button pressed.');
-	            break;
-	        case 3:
-	        	step();
-	            // alert('Right Mouse button pressed.');
-	            break;
-	        default:
-	            alert('You have a strange Mouse!');
-	    }
-	});
 
 }
 
