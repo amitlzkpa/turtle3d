@@ -252,6 +252,7 @@ function RuleSetLine_2D_23Turn(turtle) {
 }
 
 
+// ------------------------------------------
 
 
 function ThreeBasicSys() {
@@ -267,8 +268,6 @@ function ThreeBasicSys() {
 
 
 
-
-
 function THREEapp() {
 
 	let camera, scene, renderer;
@@ -277,12 +276,16 @@ function THREEapp() {
 	let lsys, lobjs;
 	let retainHistory = true;
 
+	let rSet;
+
 	let container = document.getElementById("app");
-	let btnStep = document.getElementById("step");
 	let chkBxRetainHistory = document.getElementById("rthistory");
+	let btnStep = document.getElementById("step");
+	let btnReset = document.getElementById("reset");
 	 
 
 	init();
+	initl3d();
 	animate();
 
 
@@ -290,21 +293,25 @@ function THREEapp() {
 		retainHistoryToggled(this.checked);
 	});
 	chkBxRetainHistory.checked = retainHistory;
-	retainHistoryToggled(retainHistory);
 
 
 	btnStep.addEventListener("mouseup", stepClicked);
+	btnReset.addEventListener("mouseup", resetClicked);
+
+
+	function initl3d() {
+		lobjs = new THREE.Object3D();
+		lsys = new LSimulator();
+		rSet = new ThreeBasicSys();
+		lsys.init(rSet.axiom, rSet.ruleSet);
+	}
+
 	 
 	function init() {	 
 		camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 1000 );
 		camera.position.z = 1;
 		scene = new THREE.Scene();
 		controls = new THREE.OrbitControls( camera );
-
-		lobjs = new THREE.Object3D();
-		lsys = new LSimulator();
-		let rSet = new ThreeBasicSys();
-		lsys.init(rSet.axiom, rSet.ruleSet);
 
 		let gridHelper = new THREE.GridHelper( 20, 100 );
 		scene.add( gridHelper );
@@ -329,6 +336,12 @@ function THREEapp() {
 
 
 
+	async function resetClicked(e) {
+		await reset();
+	}
+
+
+
 	async function stepClicked(e) {
 		await step();
 	}
@@ -346,6 +359,17 @@ function THREEapp() {
 
 
 
+	async function reset() {
+		emptyObject3D(scene);
+		lobjs = new THREE.Object3D();
+		lsys = new LSimulator();
+		rSet = new ThreeBasicSys();
+		lsys.init(rSet.axiom, rSet.ruleSet);
+		await render();
+	}
+
+
+
 	async function step() {
 		await lsys.step();
 		await render();
@@ -354,13 +378,25 @@ function THREEapp() {
 
 
 	async function render() {
-		if(!retainHistory) scene.remove(lobjs);
-		lobjs = new THREE.Object3D();
+		if(!retainHistory) {
+			emptyObject3D(lobjs);
+		}
 		for (let i = 0; i < lsys.state.length; i++) {
 			lobjs.add(lsys.state[i]);
 		}
 		scene.add(lobjs);
 	}
+
+
+
+
+	function emptyObject3D(o3d) {
+		for (let i = 0; i < o3d.children.length; i++) {
+			scene.remove(o3d.children[i]);
+		}
+	}
+
+
 
 }
 
