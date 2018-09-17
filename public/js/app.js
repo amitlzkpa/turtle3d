@@ -162,27 +162,29 @@ function ThreeBasicSys() {
 
 function THREEapp() {
 
-	let container = document.getElementById("app");
-	let btnStep = document.getElementById("step");
-
-	let chkBxRetainHistory = document.getElementById("rthistory");
-
-	chkBxRetainHistory.addEventListener( 'change', function() {
-		retainHistoryToggled(this.checked);
-	});
-
-
-
-	btnStep.addEventListener("mouseup", stepClicked);
-
 	let camera, scene, renderer;
 	let controls;
 
 	let lsys, lobjs;
-	let retainHistory = false;
+	let retainHistory = true;
+
+	let container = document.getElementById("app");
+	let btnStep = document.getElementById("step");
+	let chkBxRetainHistory = document.getElementById("rthistory");
 	 
+
 	init();
 	animate();
+
+
+	chkBxRetainHistory.addEventListener( 'change', function() {
+		retainHistoryToggled(this.checked);
+	});
+	chkBxRetainHistory.checked = retainHistory;
+	retainHistoryToggled(retainHistory);
+
+
+	btnStep.addEventListener("mouseup", stepClicked);
 	 
 	function init() {	 
 		camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 1000 );
@@ -195,8 +197,8 @@ function THREEapp() {
 		let rSet = new ThreeBasicSys();
 		lsys.init(rSet.axiom, rSet.ruleSet);
 
-		// var axesHelper = new THREE.AxesHelper( 2 );
-		// scene.add( axesHelper );
+		let gridHelper = new THREE.GridHelper( 20, 100 );
+		scene.add( gridHelper );
 
 		renderer = new THREE.WebGLRenderer( { antialias: true } );
 		renderer.setSize( window.innerWidth, window.innerHeight );
