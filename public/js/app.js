@@ -19,9 +19,52 @@ window.addEventListener('load', () => {
 
 
 
+// ---------------------------------
 
 
-function LState() {
+
+/*
+function ABASys() {
+	this.axiom = function() { return ["A"] };
+	this.ruleSet = 	{
+						"A": function() { return ["A", "B", "A"] },
+						"B": function() { return ["B", "B", "B"] }
+					}
+}
+*/
+
+
+
+function BasicTurtle() {
+	this.render = async function() {
+	    let c = new THREE.Mesh( this.g, this.m );
+	    c.name = "cube";
+		return [c];
+	}
+
+	this.transform = async function(iter, parent) {
+		let r = [];
+	    let c = new THREE.Mesh( new THREE.BoxGeometry( 0.2, 0.2, 0.2 ), this.m );
+	    c.position.x = parent.position.x + 10;
+	    c.position.z = parent.position.z - 10;
+		c.name = "cube";
+	    r.push(c);
+	    c = new THREE.Mesh( new THREE.BoxGeometry( 0.2, 0.2, 0.2 ), this.m );
+	    c.position.x = parent.position.x - 10;
+	    c.position.z = parent.position.z + 10;
+		c.name = "cube";
+	    r.push(c);
+		return r;
+	}
+}
+
+
+
+// --------------------------
+
+
+
+function LSimulator() {
 
 
 	this.reset = function() {
@@ -61,22 +104,9 @@ function LState() {
 
 
 
-/*
-function ABASys() {
-	this.axiom = function() { return ["A"] };
-	this.ruleSet = 	{
-						"A": function() { return ["A", "B", "A"] },
-						"B": function() { return ["B", "B", "B"] }
-					}
-}
-*/
-
-
-
-
 
 function ThreeBasicSys() {
-	var m = new THREE.MeshBasicMaterial( { color: "#FF0000" } );
+	let m = new THREE.MeshBasicMaterial( { color: "#FF0000" } );
 
 
 	this.axiom = () => 	{
@@ -101,7 +131,6 @@ function ThreeBasicSys() {
 										return r;
 									}
 }
-
 
 
 
@@ -138,7 +167,7 @@ function THREEapp() {
 		controls = new THREE.OrbitControls( camera );
 
 		lobjs = new THREE.Object3D();
-		lsys = new LState();
+		lsys = new LSimulator();
 		let rSet = new ThreeBasicSys();
 		lsys.init(rSet.axiom, rSet.ruleSet);
 
@@ -148,13 +177,12 @@ function THREEapp() {
 		controls.update();
 		container.appendChild( renderer.domElement );
 	}
-	
+
 
 	function animate() {
 	    requestAnimationFrame( animate );
 	    controls.update();	 
 	    renderer.render( scene, camera );
-	 
 	}
 
 
@@ -164,7 +192,7 @@ function THREEapp() {
 
 
 	async function stepClicked(e) {
-		step();
+		await step();
 	}
 
 
