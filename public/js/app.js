@@ -110,41 +110,48 @@ function TestSys() {
 
 
 
-function ThreeBasicSys() {
-	let m = new THREE.LineBasicMaterial({ color: 0xffffff });
-	let d = 1;
 
+function LineTurtle(start, end) {
+	let g, c;
+	let m = new THREE.LineBasicMaterial({ color: 0xffffff });
+	g = new THREE.Geometry();
+	g.vertices.push(start, end);
+    c = new THREE.Line( g, this.m );
+    c.name = "line";
+    c.start =  () => { return g.vertices[0]; }
+    c.end = () => { return g.vertices[1]; }
+    return c;
+}
+
+
+
+function ThreeBasicSys() {
+
+	let d = 1;
 	this.axiom = () => 	{
-							let g, c;
-							g = new THREE.Geometry();
-							g.vertices.push( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, d, 0 ) );
-						    c = new THREE.Line( g, this.m );
-						    c.name = "line";
-						    c.start =  () => { return g.vertices[0]; }
-						    c.end = () => { return g.vertices[1]; }
+							let c = new LineTurtle(new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, d, 0 ));
 							return [c];
 						};
 
 	this.ruleSet = {};
 	this.ruleSet["line"] = (i, parent) => 	{
 										let r = [];
-									    let c, g;
-									    let src = parent.end().clone();
-									    let v1 = parent.end().clone().sub(parent.start());
+										let c;
 									    let axis = new THREE.Vector3( 1, 0, 0 );
 									    let angle = Math.PI / 4;
+									    let src = parent.end().clone();
+									    let v1 = parent.end().clone().sub(parent.start());
 									    v1.applyAxisAngle( axis, angle );
 									    v1.multiplyScalar(0.5);
 									    let e1 = parent.end().clone().add(v1);
-										g = new THREE.Geometry();
-										g.vertices.push( src, e1 );
-									    c = new THREE.Line( g, this.m );
-									    c.name = "line";
-									    c.start = () => { return g.vertices[0]; }
-									    c.end = () => { return g.vertices[1]; }
+										c = new LineTurtle(src, e1);
 									    r.push(c);
-									    console.log(src);
-									    console.log(e1);
+									    let v2 = parent.end().clone().sub(parent.start());
+									    v2.applyAxisAngle( axis, -angle );
+									    v2.multiplyScalar(0.5);
+									    let e2 = parent.end().clone().add(v2);
+										c = new LineTurtle(src, e2);
+									    r.push(c);
 										return r;
 									}
 }
@@ -241,7 +248,6 @@ function THREEapp() {
 		for (let i = 0; i < lsys.state.length; i++) {
 			lobjs.add(lsys.state[i]);
 		}
-		console.log(lsys.state);
 		scene.add(lobjs);
 	}
 
