@@ -44,3 +44,28 @@ body {
     display: none !important; /* IE8 fix */
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+.draggable {
+  display: inline-block;
+  border-radius: 3px;
+  background-color: #87CEFA;
+  padding: 1px 8px 1px 8px;
+  -webkit-transform: translate(0px, 0px);
+          transform: translate(0px, 0px);
+}
+
+#drag-me::before {
+  content: "#" attr(id);
+  font-weight: bold;
+}

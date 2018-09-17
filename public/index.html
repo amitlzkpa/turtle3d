@@ -25,17 +25,27 @@
       <span>Explore <a href="" target="_blank">L-Systems</a></span>
 
       <hr>
-
+<!-- 
       <div class="rthistory-check">
         <input type="checkbox" class="rthistory-input" id="rthistory">
         <label class="form-check-label" for="rthistory">Retain History</label>
       </div>
+ -->
 
       <br>
 
-      <button type="button" id="step" class="btn btn-primary" autocomplete="off">
-        Step
-      </button>
+      <p>Turtles</p>
+      <div style="width: 300px; height: 100px;">
+        <div class="draggable">Straight Line</div>
+        <div class="draggable">Stilted Line</div>
+        <div class="draggable">Bubble Line</div>
+      </div>
+
+      <p>Rules</p>
+      <div style="width: 300px; height: 100px;">
+        <div class="draggable">2D</div>
+        <div class="draggable">3D</div>
+      </div>
 
       <br>
 
@@ -43,16 +53,13 @@
         Reset
       </button>
 
-    </div>
-  </div>
+      &nbsp;
 
-  <div class="navbar navbar-default navbar-fixed-top hidden-md hidden-lg">
-    <button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target=".navmenu">
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
-    <a class="navbar-brand" href="#">Turtle3D</a>
+      <button type="button" id="step" class="btn btn-primary" autocomplete="off">
+        Step
+      </button>
+
+    </div>
   </div>
 
   <div class="container">
@@ -76,10 +83,12 @@
   <script src="scripts/handlebars/dist/handlebars.min.js"></script>
   <script src="scripts/vanilla-router/dist/vanilla-router.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/js/jasny-bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/interactjs@1.3.4/dist/interact.min.js"></script>
 
   <script src="js/three.min.js"></script>
   <script src="js/OrbitControls.js"></script>
 
+  <script src="js/init.js"></script>
   <script src="js/app.js"></script>
 
 </body>

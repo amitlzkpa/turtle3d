@@ -279,32 +279,17 @@ function THREEapp() {
 	let rSet;
 
 	let container = document.getElementById("app");
-	let chkBxRetainHistory = document.getElementById("rthistory");
 	let btnStep = document.getElementById("step");
 	let btnReset = document.getElementById("reset");
 	 
 
 	init();
-	initl3d();
 	animate();
-
-
-	chkBxRetainHistory.addEventListener( 'change', function() {
-		retainHistoryToggled(this.checked);
-	});
-	chkBxRetainHistory.checked = retainHistory;
 
 
 	btnStep.addEventListener("mouseup", stepClicked);
 	btnReset.addEventListener("mouseup", resetClicked);
-
-
-	function initl3d() {
-		lobjs = new THREE.Object3D();
-		lsys = new LSimulator();
-		rSet = new ThreeBasicSys();
-		lsys.init(rSet.axiom, rSet.ruleSet);
-	}
+	reset();
 
 	 
 	function init() {	 
@@ -348,19 +333,14 @@ function THREEapp() {
 
 
 
-	async function retainHistoryToggled(val) {
-		retainHistory = val;
-		await render();
-	}
-
-
-
 	// ----------------------------------
 
 
 
 	async function reset() {
 		emptyObject3D(scene);
+		let gridHelper = new THREE.GridHelper( 20, 100 );
+		scene.add( gridHelper );
 		lobjs = new THREE.Object3D();
 		lsys = new LSimulator();
 		rSet = new ThreeBasicSys();
@@ -378,9 +358,6 @@ function THREEapp() {
 
 
 	async function render() {
-		if(!retainHistory) {
-			emptyObject3D(lobjs);
-		}
 		for (let i = 0; i < lsys.state.length; i++) {
 			lobjs.add(lsys.state[i]);
 		}
@@ -388,6 +365,7 @@ function THREEapp() {
 	}
 
 
+	// ----------------------------
 
 
 	function emptyObject3D(o3d) {
