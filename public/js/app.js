@@ -35,31 +35,6 @@ function ABASys() {
 
 
 
-function BasicTurtle() {
-	this.render = async function() {
-	    let c = new THREE.Mesh( this.g, this.m );
-	    c.name = "cube";
-		return [c];
-	}
-
-	this.transform = async function(iter, parent) {
-		let r = [];
-	    let c = new THREE.Mesh( new THREE.BoxGeometry( 0.2, 0.2, 0.2 ), this.m );
-	    c.position.x = parent.position.x + 10;
-	    c.position.z = parent.position.z - 10;
-		c.name = "cube";
-	    r.push(c);
-	    c = new THREE.Mesh( new THREE.BoxGeometry( 0.2, 0.2, 0.2 ), this.m );
-	    c.position.x = parent.position.x - 10;
-	    c.position.z = parent.position.z + 10;
-		c.name = "cube";
-	    r.push(c);
-		return r;
-	}
-}
-
-
-
 // --------------------------
 
 
@@ -105,7 +80,7 @@ function LSimulator() {
 
 
 
-function ThreeBasicSys() {
+function TestSys() {
 	let m = new THREE.MeshBasicMaterial( { color: "#FF0000" } );
 
 
@@ -128,6 +103,48 @@ function ThreeBasicSys() {
 									    c.position.z = parent.position.z + i/10;
 										c.name = "cube";
 									    r.push(c);
+										return r;
+									}
+}
+
+
+
+
+function ThreeBasicSys() {
+	let m = new THREE.LineBasicMaterial({ color: 0xffffff });
+	let d = 1;
+
+	this.axiom = () => 	{
+							let g, c;
+							g = new THREE.Geometry();
+							g.vertices.push( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, d, 0 ) );
+						    c = new THREE.Line( g, this.m );
+						    c.name = "line";
+						    c.start =  () => { return g.vertices[0]; }
+						    c.end = () => { return g.vertices[1]; }
+							return [c];
+						};
+
+	this.ruleSet = {};
+	this.ruleSet["line"] = (i, parent) => 	{
+										let r = [];
+									    let c, g;
+									    let src = parent.end().clone();
+									    let v1 = parent.end().clone().sub(parent.start());
+									    let axis = new THREE.Vector3( 1, 0, 0 );
+									    let angle = Math.PI / 4;
+									    v1.applyAxisAngle( axis, angle );
+									    v1.multiplyScalar(0.5);
+									    let e1 = parent.end().clone().add(v1);
+										g = new THREE.Geometry();
+										g.vertices.push( src, e1 );
+									    c = new THREE.Line( g, this.m );
+									    c.name = "line";
+									    c.start = () => { return g.vertices[0]; }
+									    c.end = () => { return g.vertices[1]; }
+									    r.push(c);
+									    console.log(src);
+									    console.log(e1);
 										return r;
 									}
 }
@@ -161,7 +178,7 @@ function THREEapp() {
 	animate();
 	 
 	function init() {	 
-		camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
+		camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 1000 );
 		camera.position.z = 1;
 		scene = new THREE.Scene();
 		controls = new THREE.OrbitControls( camera );
@@ -170,6 +187,9 @@ function THREEapp() {
 		lsys = new LSimulator();
 		let rSet = new ThreeBasicSys();
 		lsys.init(rSet.axiom, rSet.ruleSet);
+
+		// var axesHelper = new THREE.AxesHelper( 2 );
+		// scene.add( axesHelper );
 
 		renderer = new THREE.WebGLRenderer( { antialias: true } );
 		renderer.setSize( window.innerWidth, window.innerHeight );
@@ -221,6 +241,7 @@ function THREEapp() {
 		for (let i = 0; i < lsys.state.length; i++) {
 			lobjs.add(lsys.state[i]);
 		}
+		console.log(lsys.state);
 		scene.add(lobjs);
 	}
 
