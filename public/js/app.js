@@ -257,7 +257,7 @@ function RuleSetLine_2D_23Turn(turtle) {
 
 function ThreeBasicSys() {
 	let d = 1;
-	let turtleType = StiltedTurtle;
+	let turtleType = LineTurtle;
 	this.axiom = () => 	{
 							let c = new turtleType(new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, d, 0 ));
 							return [c];
