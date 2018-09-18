@@ -1,3 +1,5 @@
+var L3D;
+
 
 window.addEventListener('load', async function() {
 	const el = $('#app');
@@ -14,7 +16,7 @@ window.addEventListener('load', async function() {
 		},
 	});
 
-	const L3D = new L3DApp();
+	L3D = new L3DApp();
 	await L3D.reset();
 });
 
@@ -56,8 +58,6 @@ function LSimulator() {
 
 
 	this.reset();
-
-
 }
 
 
@@ -235,8 +235,14 @@ function ThreeBasicSys() {
 
 	this.ruleSet = new RuleSetLine_3D_45Turn(turtleType);
 
-	this.set = function (turtle) {
-		console.log(turtle);
+	this.setTurtle = function (turtleName) {
+		switch(turtleName) {
+			case 'Straight Line': { turtleType = LineTurtle; break; }
+			case 'Stilted Line': { turtleType = StiltedTurtle; break; }
+			case 'Bubble Line': { turtleType = BubbleLineTurtle; break; }
+			default: { turtleType = LineTurtle; }
+		}
+		// console.log(turtleType);
 	}
 }
 
@@ -312,13 +318,15 @@ function L3DApp() {
 
 	this.objects = null;
 	this.simulator = null;
+	this.lengine = 
 
 
 	this.reset = async function() {
 		scene.remove(this.objects);
 		this.objects = new THREE.Object3D();
 		this.simulator = new LSimulator();
-		this.simulator.init(new ThreeBasicSys());
+		this.lengine = new ThreeBasicSys();
+		this.simulator.init(this.lengine);
 		await this.render();
 	}
 

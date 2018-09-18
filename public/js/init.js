@@ -87,7 +87,7 @@ $( document ).ready(function() {
       // console.log('ondragleave');
     },
     ondrop: function (event) {
-      console.log(event.target.textContent);
+      L3D.lengine.setTurtle(event.relatedTarget.textContent);
     },
     ondropdeactivate: function (event) {
       // remove active dropzone feedback
