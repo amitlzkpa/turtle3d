@@ -48,24 +48,59 @@ body {
 
 
 
+#drag-1, #drag-2 {
 
-
-
-
-
-
-
-
-.draggable {
-  display: inline-block;
-  border-radius: 3px;
-  background-color: #87CEFA;
-  padding: 1px 8px 1px 8px;
   -webkit-transform: translate(0px, 0px);
           transform: translate(0px, 0px);
 }
 
-#drag-me::before {
-  content: "#" attr(id);
-  font-weight: bold;
+
+
+
+
+
+
+
+
+
+
+
+.dropzone {
+  background-color: #ccc;
+  border: dashed 4px transparent;
+  border-radius: 4px;
+  margin: 10px auto 30px;
+  padding: 10px;
+  width: 80%;
+  transition: background-color 0.3s;
+}
+
+.drop-active {
+  border-color: #aaa;
+}
+
+.drop-target {
+  background-color: #29e;
+  border-color: #fff;
+  border-style: solid;
+}
+
+.drag-drop {
+  display: inline-block;
+  border-radius: 3px;
+  padding: 1px 8px 1px 8px;
+  color: #fff;
+  background-color: #29e;
+  border: solid 2px #27e;
+  margin: 1px;
+
+  -webkit-transform: translate(0px, 0px);
+          transform: translate(0px, 0px);
+
+  transition: background-color 0.3s;
+}
+
+.drag-drop.can-drop {
+  color: #000;
+  background-color: #4e4;
 }
