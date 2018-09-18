@@ -21,46 +21,6 @@ window.addEventListener('load', async function() {
 });
 
 
-
-// --------------------------
-
-
-
-function LSimulator() {
-
-
-	this.reset = function() {
-		this.iters = -1;
-
-		// should always be a list
-		this.state = null;
-		// map objects to generators
-		this.ruleSet = null;
-	}
-
-
-	this.init = function(sys) {
-		this.iters = 0;
-		this.state = sys.axiom();
-		this.ruleSet = sys.ruleSet;
-	}
-
-
-	this.step = async function () {
-		let stateBuffer = [];
-		for (let i = 0; i < this.state.length; i++) {
-			let o = this.state[i];
-			stateBuffer.push(...this.ruleSet[o.name](this.iters, o));
-		}
-		this.state = stateBuffer;
-		this.iters++;
-	}
-
-
-	this.reset();
-}
-
-
 // -----------------------------------------
 
 
@@ -219,6 +179,44 @@ function RuleSetLine_2D_23Turn(turtle) {
 								    r.push(c);
 									return r;
 								}
+}
+
+
+// --------------------------
+
+
+function LSimulator() {
+
+
+	this.reset = function() {
+		this.iters = -1;
+
+		// should always be a list
+		this.state = null;
+		// map objects to generators
+		this.ruleSet = null;
+	}
+
+
+	this.init = function(sys) {
+		this.iters = 0;
+		this.state = sys.axiom();
+		this.ruleSet = sys.ruleSet;
+	}
+
+
+	this.step = async function () {
+		let stateBuffer = [];
+		for (let i = 0; i < this.state.length; i++) {
+			let o = this.state[i];
+			stateBuffer.push(...this.ruleSet[o.name](this.iters, o));
+		}
+		this.state = stateBuffer;
+		this.iters++;
+	}
+
+
+	this.reset();
 }
 
 
