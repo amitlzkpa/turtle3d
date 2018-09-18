@@ -93,9 +93,8 @@ function StiltedTurtle(start, end) {
 // -----------------------------------------
 
 
-function RuleSetLine_2D_45Turn(turtle) {
-	this.turtle = turtle;
-	this.line = (i, parent) => 	{
+function RuleSetLine_2D_45Turn() {
+	this.run = (i, parent, turtle) => 	{
 									let r = [];
 									let c;
 								    let axis = new THREE.Vector3( 1, 0, 0 );
@@ -118,9 +117,8 @@ function RuleSetLine_2D_45Turn(turtle) {
 }
 
 
-function RuleSetLine_3D_45Turn(turtle) {
-	this.turtle = turtle;
-	this.line = (i, parent) => 	{
+function RuleSetLine_3D_45Turn() {
+	this.run = (i, parent, turtle) => 	{
 									let r = [];
 									let c;
 								    let axis;
@@ -157,9 +155,8 @@ function RuleSetLine_3D_45Turn(turtle) {
 }
 
 
-function RuleSetLine_2D_23Turn(turtle) {
-	this.turtle = turtle;
-	this.line = (i, parent) => 	{
+function RuleSetLine_2D_23Turn() {
+	this.run = (i, parent, turtle) => 	{
 									let r = [];
 									let c;
 								    let axis = new THREE.Vector3( 1, 0, 0 );
@@ -187,6 +184,7 @@ function RuleSetLine_2D_23Turn(turtle) {
 
 function LSimulator() {
 
+	let sys = null;
 
 	this.reset = function() {
 		this.iters = -1;
@@ -198,18 +196,20 @@ function LSimulator() {
 	}
 
 
-	this.init = function(sys) {
+	this.init = function(system) {
+		sys = system;
 		this.iters = 0;
 		this.state = sys.axiom();
-		this.ruleSet = sys.ruleSet;
+		this.ruleSet = sys.getRuleSet();
 	}
 
 
 	this.step = async function () {
+		this.ruleSet = sys.getRuleSet();
 		let stateBuffer = [];
 		for (let i = 0; i < this.state.length; i++) {
 			let o = this.state[i];
-			stateBuffer.push(...this.ruleSet[o.name](this.iters, o));
+			stateBuffer.push(...this.ruleSet.run(this.iters, o, sys.getCurrentTurtleType()));
 		}
 		this.state = stateBuffer;
 		this.iters++;
@@ -224,24 +224,40 @@ function LSimulator() {
 
 
 function ThreeBasicSys() {
+	let currentTurtleType = null;
+	let ruleSet = null;
+
 	this.d = 1;
-	let turtleType = StiltedTurtle;
+
 	this.axiom = function() {
-								let c = new turtleType(new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, this.d, 0 ));
+								let c = new currentTurtleType(new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, this.d, 0 ));
 								return [c];
 							};
 
-	this.ruleSet = new RuleSetLine_3D_45Turn(turtleType);
-
 	this.setTurtle = function (turtleName) {
 		switch(turtleName) {
-			case 'Straight Line': { turtleType = LineTurtle; break; }
-			case 'Stilted Line': { turtleType = StiltedTurtle; break; }
-			case 'Bubble Line': { turtleType = BubbleLineTurtle; break; }
-			default: { turtleType = LineTurtle; }
+			case 'Straight Line': { currentTurtleType = LineTurtle; break; }
+			case 'Stilted Line': { currentTurtleType = StiltedTurtle; break; }
+			case 'Bubble Line': { currentTurtleType = BubbleLineTurtle; break; }
+			default: { currentTurtleType = LineTurtle; }
 		}
-		// console.log(turtleType);
 	}
+
+	this.setRuleset = function (rulesetName) {
+		// console.log(rulesetName);
+		switch(rulesetName) {
+			case '2-45': { ruleSet = new RuleSetLine_2D_45Turn(); break; }
+			case '4-45': { ruleSet = new RuleSetLine_3D_45Turn(); break; }
+			case '2-23': { ruleSet = new RuleSetLine_2D_23Turn(); break; }
+			default: { ruleSet = new RuleSetLine_2D_45Turn(); }
+		}
+	}
+
+	this.getCurrentTurtleType = function() { return currentTurtleType; }
+	this.getRuleSet = function() { return ruleSet; }
+
+	this.setTurtle(StiltedTurtle);
+	this.setRuleset(RuleSetLine_3D_45Turn);
 }
 
 

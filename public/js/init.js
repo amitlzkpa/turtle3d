@@ -152,7 +152,7 @@ $( document ).ready(function() {
       // console.log('ondragleave');
     },
     ondrop: function (event) {
-      // L3D.lengine.setTurtle(event.relatedTarget.textContent);
+      L3D.lengine.setRuleset(event.relatedTarget.textContent);
     },
     ondropdeactivate: function (event) {
       // remove active dropzone feedback
