@@ -1,4 +1,3 @@
-var threeapp;
 
 window.addEventListener('load', async function() {
 	const el = $('#app');
@@ -15,8 +14,8 @@ window.addEventListener('load', async function() {
 		},
 	});
 
-	threeapp = new THREEapp();
-	await threeapp.reset();
+	const L3D = new L3DApp();
+	await L3D.reset();
 });
 
 
@@ -59,36 +58,6 @@ function LSimulator() {
 	this.reset();
 
 
-}
-
-
-
-
-function TestSys() {
-	let m = new THREE.MeshBasicMaterial( { color: "#FF0000" } );
-
-
-	this.axiom = () => 	{
-						    let c = new THREE.Mesh( this.g, this.m );
-						    c.name = "cube";
-							return [c];
-						};
-
-	this.ruleSet = {};
-	this.ruleSet["cube"] = (i, parent) => 	{
-										let r = [];
-									    let c = new THREE.Mesh( new THREE.BoxGeometry( 0.2, 0.2, 0.2 ), this.m );
-									    c.position.x = parent.position.x + i/10;
-									    c.position.z = parent.position.z - i/10;
-										c.name = "cube";
-									    r.push(c);
-									    c = new THREE.Mesh( new THREE.BoxGeometry( 0.2, 0.2, 0.2 ), this.m );
-									    c.position.x = parent.position.x - i/10;
-									    c.position.z = parent.position.z + i/10;
-										c.name = "cube";
-									    r.push(c);
-										return r;
-									}
 }
 
 
@@ -273,7 +242,11 @@ function ThreeBasicSys() {
 
 
 
-function THREEapp() {
+// ------------------------------------------
+
+
+
+function L3DApp() {
 
 	let camera, scene, renderer;
 	let controls;
@@ -337,32 +310,32 @@ function THREEapp() {
 	// ----------------------------------
 
 
-	this.lobjs = null;
-	this.lsys = null;
+	this.objects = null;
+	this.simulator = null;
 
 
 	this.reset = async function() {
-		scene.remove(this.lobjs);
-		this.lobjs = new THREE.Object3D();
-		this.lsys = new LSimulator();
-		this.lsys.init(new ThreeBasicSys());
+		scene.remove(this.objects);
+		this.objects = new THREE.Object3D();
+		this.simulator = new LSimulator();
+		this.simulator.init(new ThreeBasicSys());
 		await this.render();
 	}
 
 
 
 	this.step = async function() {
-		await this.lsys.step();
+		await this.simulator.step();
 		await this.render();
 	}
 
 
 
 	this.render = async function() {
-		for (let i = 0; i < this.lsys.state.length; i++) {
-			this.lobjs.add(this.lsys.state[i]);
+		for (let i = 0; i < this.simulator.state.length; i++) {
+			this.objects.add(this.simulator.state[i]);
 		}
-		scene.add(this.lobjs);
+		scene.add(this.objects);
 	}
 
 
