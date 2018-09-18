@@ -1,4 +1,6 @@
-window.addEventListener('load', () => {
+var threeapp;
+
+window.addEventListener('load', async function() {
 	const el = $('#app');
 	const errorTemplate = Handlebars.compile($('#error-template').html());
 
@@ -13,7 +15,8 @@ window.addEventListener('load', () => {
 		},
 	});
 
-	THREEapp();
+	threeapp = new THREEapp();
+	await threeapp.reset();
 });
 
 
@@ -26,7 +29,6 @@ function LSimulator() {
 
 
 	this.reset = function() {
-		this.constants = null;
 		this.iters = -1;
 
 		// should always be a list
@@ -36,11 +38,10 @@ function LSimulator() {
 	}
 
 
-	this.init = function(axiom, ruleSet, constants) {
-		this.constants = constants;
+	this.init = function(sys) {
 		this.iters = 0;
-		this.state = axiom();
-		this.ruleSet = ruleSet;
+		this.state = sys.axiom();
+		this.ruleSet = sys.ruleSet;
 	}
 
 
@@ -256,14 +257,18 @@ function RuleSetLine_2D_23Turn(turtle) {
 
 
 function ThreeBasicSys() {
-	let d = 1;
-	let turtleType = LineTurtle;
-	this.axiom = () => 	{
-							let c = new turtleType(new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, d, 0 ));
-							return [c];
-						};
+	this.d = 1;
+	let turtleType = StiltedTurtle;
+	this.axiom = function() {
+								let c = new turtleType(new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, this.d, 0 ));
+								return [c];
+							};
 
 	this.ruleSet = new RuleSetLine_3D_45Turn(turtleType);
+
+	this.set = function (turtle) {
+		console.log(turtle);
+	}
 }
 
 
@@ -272,11 +277,6 @@ function THREEapp() {
 
 	let camera, scene, renderer;
 	let controls;
-
-	let lsys, lobjs;
-	let retainHistory = true;
-
-	let rSet;
 
 	let container = document.getElementById("app");
 	let btnStep = document.getElementById("step");
@@ -289,7 +289,6 @@ function THREEapp() {
 
 	btnStep.addEventListener("mouseup", stepClicked);
 	btnReset.addEventListener("mouseup", resetClicked);
-	reset();
 
 	 
 	function init() {	 
@@ -321,14 +320,16 @@ function THREEapp() {
 
 
 
+	let ctxt = this;
+
 	async function resetClicked(e) {
-		await reset();
+		await ctxt.reset();
 	}
 
 
 
 	async function stepClicked(e) {
-		await step();
+		await ctxt.step();
 	}
 
 
@@ -336,42 +337,32 @@ function THREEapp() {
 	// ----------------------------------
 
 
+	this.lobjs = null;
+	this.lsys = null;
 
-	async function reset() {
-		emptyObject3D(scene);
-		let gridHelper = new THREE.GridHelper( 20, 100 );
-		scene.add( gridHelper );
-		lobjs = new THREE.Object3D();
-		lsys = new LSimulator();
-		rSet = new ThreeBasicSys();
-		lsys.init(rSet.axiom, rSet.ruleSet);
-		await render();
+
+	this.reset = async function() {
+		scene.remove(this.lobjs);
+		this.lobjs = new THREE.Object3D();
+		this.lsys = new LSimulator();
+		this.lsys.init(new ThreeBasicSys());
+		await this.render();
 	}
 
 
 
-	async function step() {
-		await lsys.step();
-		await render();
+	this.step = async function() {
+		await this.lsys.step();
+		await this.render();
 	}
 
 
 
-	async function render() {
-		for (let i = 0; i < lsys.state.length; i++) {
-			lobjs.add(lsys.state[i]);
+	this.render = async function() {
+		for (let i = 0; i < this.lsys.state.length; i++) {
+			this.lobjs.add(this.lsys.state[i]);
 		}
-		scene.add(lobjs);
-	}
-
-
-	// ----------------------------
-
-
-	function emptyObject3D(o3d) {
-		for (let i = 0; i < o3d.children.length; i++) {
-			scene.remove(o3d.children[i]);
-		}
+		scene.add(this.lobjs);
 	}
 
 
