@@ -31,21 +31,15 @@ $( document ).ready(function() {
 
 
 
-  // target elements with the "draggable" class
   interact('.turtle-tags').draggable({
-    // enable inertial throwing
     inertia: true,
-    // keep the element within the area of it's parent
     restrict: {
       restriction: ".turtle-bounds",
       endOnly: true,
       elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
     },
-    // enable autoScroll
     autoScroll: true,
-    // call this function on every dragmove event
     onmove: dragMoveListener,
-    // call this function on every dragend event
     onend: function (event) {
       let textEl = event.target
     }
@@ -53,21 +47,15 @@ $( document ).ready(function() {
 
 
 
-  // target elements with the "draggable" class
   interact('.ruleset-tags').draggable({
-    // enable inertial throwing
     inertia: true,
-    // keep the element within the area of it's parent
     restrict: {
       restriction: ".ruleset-bounds",
       endOnly: true,
       elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
     },
-    // enable autoScroll
     autoScroll: true,
-    // call this function on every dragmove event
     onmove: dragMoveListener,
-    // call this function on every dragend event
     onend: function (event) {
       let textEl = event.target
     }
@@ -79,86 +67,72 @@ $( document ).ready(function() {
 
 
 
-  // enable draggables to be dropped into this
+  let selectTurtle = '';
   interact('#turtle-dropzone').dropzone({
-    // only accept elements matching this CSS selector
     accept: '.turtle-tags',
-    // Require a 15% element overlap for a drop to be possible
     overlap: 0.15,
-
-    // listen for drop related events:
-
     ondropactivate: function (event) {
-      // add active dropzone feedback
       event.target.classList.add('drop-active');
-      // console.log('ondropact');
     },
     ondragenter: function (event) {
       let draggableElement = event.relatedTarget,
           dropzoneElement = event.target;
-
-      // feedback the possibility of a drop
-      dropzoneElement.classList.add('drop-target');
-      draggableElement.classList.add('can-drop');
-      // console.log('ondragenter');
+      if(selectTurtle == '') {
+        dropzoneElement.classList.add('drop-target');
+        draggableElement.classList.add('can-drop');
+      }
     },
     ondragleave: function (event) {
-      // remove the drop feedback style
       event.target.classList.remove('drop-target');
       event.relatedTarget.classList.remove('can-drop');
-      // console.log('ondragleave');
+      if(selectTurtle == event.relatedTarget.textContent) {
+        selectTurtle = '';
+      }
     },
     ondrop: function (event) {
+      selectTurtle = event.relatedTarget.textContent;
       L3D.lengine.setTurtle(event.relatedTarget.textContent);
     },
     ondropdeactivate: function (event) {
-      // remove active dropzone feedback
       event.target.classList.remove('drop-active');
       event.target.classList.remove('drop-target');
-      // console.log('ondropdeactivate');
     }
   });
 
 
 
 
-  // enable draggables to be dropped into this
+  let selectRuleset = '';
   interact('#ruleset-dropzone').dropzone({
-    // only accept elements matching this CSS selector
     accept: '.ruleset-tags',
-    // Require a 15% element overlap for a drop to be possible
     overlap: 0.15,
-
-    // listen for drop related events:
-
     ondropactivate: function (event) {
-      // add active dropzone feedback
       event.target.classList.add('drop-active');
-      // console.log('ondropact');
     },
     ondragenter: function (event) {
       let draggableElement = event.relatedTarget,
           dropzoneElement = event.target;
-
-      // feedback the possibility of a drop
       dropzoneElement.classList.add('drop-target');
       draggableElement.classList.add('can-drop');
-      // console.log('ondragenter');
+      if(selectRuleset == '') {
+        dropzoneElement.classList.add('drop-target');
+        draggableElement.classList.add('can-drop');
+      }
     },
     ondragleave: function (event) {
-      // remove the drop feedback style
       event.target.classList.remove('drop-target');
       event.relatedTarget.classList.remove('can-drop');
-      // console.log('ondragleave');
+      if(selectRuleset == event.relatedTarget.textContent) {
+        selectRuleset = '';
+      }
     },
     ondrop: function (event) {
+      selectRuleset = event.relatedTarget.textContent;
       L3D.lengine.setRuleset(event.relatedTarget.textContent);
     },
     ondropdeactivate: function (event) {
-      // remove active dropzone feedback
       event.target.classList.remove('drop-active');
       event.target.classList.remove('drop-target');
-      // console.log('ondropdeactivate');
     }
   });
 
