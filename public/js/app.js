@@ -12,6 +12,96 @@ window.addEventListener('load', async function() {
 // --------------------------
 
 
+function getPointInBetweenByLen(pointA, pointB, percentage) {
+	let dir = pointB.clone().sub(pointA);
+	let len = dir.length();
+	dir = dir.normalize().multiplyScalar(len*percentage);
+	return pointA.clone().add(dir);
+}
+
+
+function getRandomPosNegFloat(max) {
+	return (Math.random()*max) * ((Math.random() < 0.5) ? 1 : -1);
+}
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
+
+
+// --------------------------
+
+
+function getDwellingSphere(i) {
+	let szs = [0.3, 0.4, 0.5];
+	let divss = [4, 5, 7];
+	let  sz = szs[i];
+	let divs = divss[i];
+	let g, m, w, o;
+	o = new THREE.Object3D();
+	g = new THREE.SphereGeometry( sz, divs, divs );
+	let reg_mat = new THREE.MeshBasicMaterial({ color: Math.random() * 0xffffff  });
+    m = new THREE.Mesh( g, reg_mat );
+    let wire_mat = new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 4 } );
+    w = new THREE.LineSegments( g, wire_mat );
+    o.add(m);
+    o.add(w);
+    o.rotation.set(Math.random(), Math.random(), Math.random());
+    return o;
+}
+
+
+function Dwelling_for_4(center) {
+	let o = new THREE.Object3D();
+	let i;
+	i = getDwellingSphere(getRandomInt(2));
+	i.position.set(getRandomPosNegFloat(1), getRandomPosNegFloat(0.1), getRandomPosNegFloat(1));
+    o.add(i);
+	i = getDwellingSphere(getRandomInt(2));
+	i.position.set(getRandomPosNegFloat(1), getRandomPosNegFloat(0.1), getRandomPosNegFloat(1));
+    o.add(i);
+	i = getDwellingSphere(getRandomInt(2));
+	i.position.set(getRandomPosNegFloat(1), getRandomPosNegFloat(0.1), getRandomPosNegFloat(1));
+    o.add(i);
+	i = getDwellingSphere(getRandomInt(2));
+	i.position.set(getRandomPosNegFloat(1), getRandomPosNegFloat(0.1), getRandomPosNegFloat(1));
+    o.add(i);
+    o.position.set(center.x, center.y, center.z);
+    o.name = "Dwelling_for_4";
+    o.center = () => { return o.position; }
+    return o;
+}
+
+
+// -----------------------------------------
+
+
+function Pathway() {
+	this.run = (i, parent, turtle) => 	{
+									let r = [];
+									let c;
+									let p
+									let dist = 4;
+								    p = parent.center().clone().add(new THREE.Vector3(dist, 0, 0));
+									c = new turtle(p);
+								    r.push(c);
+								    p = parent.center().clone().add(new THREE.Vector3(-dist, 0, 0));
+									c = new turtle(p);
+								    r.push(c);
+								    p = parent.center().clone().add(new THREE.Vector3(0, 0, dist));
+									c = new turtle(p);
+								    r.push(c);
+								    p = parent.center().clone().add(new THREE.Vector3(0, 0, -dist));
+									c = new turtle(p);
+								    r.push(c);
+									return r;
+								}
+}
+
+
+// -----------------------------------------
+
+
 function LSimulator() {
 
 	let sys = null;
@@ -66,28 +156,23 @@ function ThreeBasicSys() {
 
 	this.setTurtle = function (turtleName) {
 		switch(turtleName) {
-			case 'Straight Line': { currentTurtleType = LineTurtle; break; }
-			case 'Stilted Line': { currentTurtleType = StiltedTurtle; break; }
-			case 'Bubble Line': { currentTurtleType = BubbleLineTurtle; break; }
-			default: { currentTurtleType = LineTurtle; }
+			case 'Dwelling_for_4': { currentTurtleType = Dwelling_for_4; break; }
+			default: { currentTurtleType = Dwelling_for_4; }
 		}
 	}
 
 	this.setRuleset = function (rulesetName) {
-		// console.log(rulesetName);
 		switch(rulesetName) {
-			case '2-45': { ruleSet = new RuleSetLine_2D_45Turn(); break; }
-			case '4-45': { ruleSet = new RuleSetLine_3D_45Turn(); break; }
-			case '2-23': { ruleSet = new RuleSetLine_2D_23Turn(); break; }
-			default: { ruleSet = new RuleSetLine_2D_45Turn(); }
+			case 'Pathway': { ruleSet = new Pathway; break; }
+			default: { ruleSet = new Pathway; }
 		}
 	}
 
 	this.getCurrentTurtleType = function() { return currentTurtleType; }
 	this.getRuleSet = function() { return ruleSet; }
 
-	this.setTurtle(StiltedTurtle);
-	this.setRuleset(RuleSetLine_3D_45Turn);
+	this.setTurtle(Dwelling_for_4);
+	this.setRuleset('Pathway');
 }
 
 
