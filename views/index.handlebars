@@ -2,7 +2,17 @@
 
 <script type="text/javascript">
 
-  {{ turtleText }}
+{{#each lsysdata.helpers}}
+  {{{ this }}}
+{{/each}}
+
+{{#each lsysdata.turtles}}
+  {{{ this }}}
+{{/each}}
+
+{{#each lsysdata.rulesets}}
+  {{{ this }}}
+{{/each}}
 
 </script>
 
@@ -11,7 +21,6 @@
   <div class="navmenu navmenu-default navmenu-fixed-left offcanvas-sm">
 
     <div style="padding: 8px;">
-
       <h2>{{ title }}</h2>
       <small>An interactive way to explore <a href="https://en.wikipedia.org/wiki/L-system" target="_blank">L-Systems</a> in 3D</small>
 
