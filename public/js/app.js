@@ -155,13 +155,63 @@ function Dwelling_6(start, end) {
 // -----------------------------------------
 
 
-function RuleSetLine_2D_45Turn() {
+function KevTree_22() {
 	this.run = (i, parent, turtle) => 	{
-									let lengthMul = 0.9;
+									let lengthMul = 0.85;
 									let r = [];
 									let c;
 								    let axis = new THREE.Vector3( 0, 1, 0 );
-								    let angle = Math.PI / 7;
+								    let angle = Math.PI * 0.125;
+								    let src = parent.end().clone();
+								    let v1 = parent.end().clone().sub(parent.start());
+								    v1.applyAxisAngle( axis, angle );
+								    v1.multiplyScalar(lengthMul);
+								    let e1 = parent.end().clone().add(v1);
+									c = new turtle(src, e1);
+								    r.push(c);
+								    let v2 = parent.end().clone().sub(parent.start());
+								    v2.applyAxisAngle( axis, -angle );
+								    v2.multiplyScalar(lengthMul);
+								    let e2 = parent.end().clone().add(v2);
+									c = new turtle(src, e2);
+								    r.push(c);
+									return r;
+								}
+}
+
+
+function KevTree_45() {
+	this.run = (i, parent, turtle) => 	{
+									let lengthMul = 0.85;
+									let r = [];
+									let c;
+								    let axis = new THREE.Vector3( 0, 1, 0 );
+								    let angle = Math.PI * 0.25;
+								    let src = parent.end().clone();
+								    let v1 = parent.end().clone().sub(parent.start());
+								    v1.applyAxisAngle( axis, angle );
+								    v1.multiplyScalar(lengthMul);
+								    let e1 = parent.end().clone().add(v1);
+									c = new turtle(src, e1);
+								    r.push(c);
+								    let v2 = parent.end().clone().sub(parent.start());
+								    v2.applyAxisAngle( axis, -angle );
+								    v2.multiplyScalar(lengthMul);
+								    let e2 = parent.end().clone().add(v2);
+									c = new turtle(src, e2);
+								    r.push(c);
+									return r;
+								}
+}
+
+
+function KevTree_115() {
+	this.run = (i, parent, turtle) => 	{
+									let lengthMul = 0.85;
+									let r = [];
+									let c;
+								    let axis = new THREE.Vector3( 0, 1, 0 );
+								    let angle = Math.PI * 0.67;
 								    let src = parent.end().clone();
 								    let v1 = parent.end().clone().sub(parent.start());
 								    v1.applyAxisAngle( axis, angle );
@@ -231,8 +281,9 @@ function ThreeBasicSys() {
 	this.d = 1;
 
 	this.axiom = function() {
-								let c = new currentTurtleType(new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, 0, -this.d ));
-								return [c];
+								let c = new currentTurtleType(new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, 0, this.d ));
+								let d = new currentTurtleType(new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, 0, -this.d ));
+								return [c, d];
 							};
 
 	this.setTurtle = function (turtleName) {
@@ -247,8 +298,10 @@ function ThreeBasicSys() {
 	this.setRuleset = function (rulesetName) {
 		// console.log(rulesetName);
 		switch(rulesetName) {
-			case '2-45': { ruleSet = new RuleSetLine_2D_45Turn(); break; }
-			default: { ruleSet = new RuleSetLine_3D_45Turn(); }
+			case 'KevTree_22': { ruleSet = new KevTree_22(); break; }
+			case 'KevTree_45': { ruleSet = new KevTree_45(); break; }
+			case 'KevTree_115': { ruleSet = new KevTree_115(); break; }
+			default: { ruleSet = new KevTree_45(); }
 		}
 	}
 
@@ -256,7 +309,7 @@ function ThreeBasicSys() {
 	this.getRuleSet = function() { return ruleSet; }
 
 	this.setTurtle('Dwelling_4');
-	this.setRuleset('2-45');
+	this.setRuleset('KevTree_45');
 }
 
 
