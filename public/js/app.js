@@ -51,7 +51,7 @@ function getDwellingSphere(i) {
 }
 
 
-function Dwelling_for_4(center) {
+function Dwelling_for_4(start, end) {
 	let o = new THREE.Object3D();
 	let i;
 	i = getDwellingSphere(getRandomInt(2));
@@ -66,9 +66,12 @@ function Dwelling_for_4(center) {
 	i = getDwellingSphere(getRandomInt(2));
 	i.position.set(getRandomPosNegFloat(1), getRandomPosNegFloat(0.1), getRandomPosNegFloat(1));
     o.add(i);
-    o.position.set(center.x, center.y, center.z);
+    o.start = start.clone();
+    o.end = end.clone();
+    o.position.set(end.x, end.y, end.z);
     o.name = "Dwelling_for_4";
-    o.center = () => { return o.position; }
+    o.getStart = () => { return o.start; }
+    o.getEnd = () => { return o.end; }
     return o;
 }
 
@@ -80,19 +83,20 @@ function Pathway() {
 	this.run = (i, parent, turtle) => 	{
 									let r = [];
 									let c;
-									let p
-									let dist = 4;
-								    p = parent.center().clone().add(new THREE.Vector3(dist, 0, 0));
-									c = new turtle(p);
+								    let axis = new THREE.Vector3( 0, 0, 1 );
+								    let angle = Math.PI / 4;
+								    let src = parent.getEnd().clone();
+								    let v1 = parent.getEnd().clone().sub(parent.getStart());
+								    v1.applyAxisAngle( axis, angle );
+								    v1.multiplyScalar(4);
+								    let e1 = parent.getEnd().clone().add(v1);
+									c = new turtle(src, e1);
 								    r.push(c);
-								    p = parent.center().clone().add(new THREE.Vector3(-dist, 0, 0));
-									c = new turtle(p);
-								    r.push(c);
-								    p = parent.center().clone().add(new THREE.Vector3(0, 0, dist));
-									c = new turtle(p);
-								    r.push(c);
-								    p = parent.center().clone().add(new THREE.Vector3(0, 0, -dist));
-									c = new turtle(p);
+								    let v2 = parent.getEnd().clone().sub(parent.getStart());
+								    v2.applyAxisAngle( axis, -angle );
+								    v2.multiplyScalar(4);
+								    let e2 = parent.getEnd().clone().add(v2);
+									c = new turtle(src, e2);
 								    r.push(c);
 									return r;
 								}
