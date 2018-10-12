@@ -31,6 +31,10 @@ function getPointInBetweenByLen(pointA, pointB, percentage) {
     return pointA.clone().add(dir);
 }
 
+function getRandomFloatInRange(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
 function getRandomPosNegFloat(max) {
 	return (Math.random()*max) * ((Math.random() < 0.5) ? 1 : -1);
 }
@@ -58,6 +62,16 @@ function getDwellingSphere(i) {
     o.add(m);
     o.add(w);
     o.rotation.set(Math.random(), Math.random(), Math.random());
+
+    let startY = o.position.y;
+    let endY = (getRandomFloatInRange(0.01, 0.02)) + startY;
+    let incr = getRandomFloatInRange(0.0003, 0.0004);
+
+	document.addEventListener('onRender', function (e) {
+		o.position.y += incr;
+		if (o.position.y < startY || o.position.y > endY) incr *= (-1);
+	}, false);
+
     return o;
 }
 
@@ -320,6 +334,9 @@ function ThreeBasicSys() {
 
 function L3DApp() {
 
+	let onRenderEvent = document.createEvent('Event');
+	onRenderEvent.initEvent('onRender', true, true);
+
 	let camera, scene, renderer;
 	let controls;
 
@@ -357,6 +374,7 @@ function L3DApp() {
 	    requestAnimationFrame( animate );
 	    controls.update();	 
 	    renderer.render( scene, camera );
+	    document.dispatchEvent(onRenderEvent);
 	}
 
 
