@@ -55,9 +55,9 @@ function getDwellingSphere(i) {
 	let g, m, w, o;
 	o = new THREE.Object3D();
 	g = new THREE.SphereGeometry( sz, divs, divs );
-	let reg_mat = new THREE.MeshBasicMaterial({ color: Math.random() * 0xffffff  });
+	let reg_mat = new THREE.MeshBasicMaterial({ color: 0x00abab });
     m = new THREE.Mesh( g, reg_mat );
-    let wire_mat = new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 4 } );
+    let wire_mat = new THREE.LineBasicMaterial( { color: 0x003333, linewidth: 4 } );
     w = new THREE.LineSegments( g, wire_mat );
     o.add(m);
     o.add(w);
@@ -82,18 +82,37 @@ function Dwelling_3(start, end) {
 	let o = new THREE.Object3D();
 	let i;
 	let moveRMax = 0.1;
+	let pos1 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	let pos2 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	let pos3 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
 	i = getDwellingSphere(getRandomInt(1));
-	i.position.set(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	i.position.set(pos1.x, pos1.y, pos1.z);
     o.add(i);
 	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	i.position.set(pos2.x, pos2.y, pos2.z);
     o.add(i);
 	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	i.position.set(pos3.x, pos3.y, pos3.z);
     o.add(i);
-	let g = new THREE.Geometry();
+
+	let c, g;
+	g = new THREE.Geometry();
+	g.vertices.push(pos1, pos2);
+    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
+    o.add(c);
+	g = new THREE.Geometry();
+	g.vertices.push(pos1, pos3);
+    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
+    o.add(c);
+	g = new THREE.Geometry();
+	g.vertices.push(pos3, pos2);
+    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
+    o.add(c);
+
+    g = new THREE.Geometry();
 	g.vertices.push(s, e);
-    let c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0x000000 }) );
+    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0x000000 }) );
+
     o.add(c);
     o.name = "Dwelling_4";
     o.start =  () => { return s; }
@@ -108,22 +127,50 @@ function Dwelling_4(start, end) {
 	let o = new THREE.Object3D();
 	let i;
 	let moveRMax = 0.1;
+	let pos1 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	let pos2 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	let pos3 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	let pos4 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
 	i = getDwellingSphere(getRandomInt(1));
-	i.position.set(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	i.position.set(pos1.x, pos1.y, pos1.z);
     o.add(i);
 	i = getDwellingSphere(getRandomInt(0));
-	i.position.set(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	i.position.set(pos2.x, pos2.y, pos2.z);
     o.add(i);
 	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	i.position.set(pos3.x, pos3.y, pos3.z);
     o.add(i);
 	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	i.position.set(pos4.x, pos4.y, pos4.z);
     o.add(i);
-	let g = new THREE.Geometry();
-	g.vertices.push(s, e);
-    let c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0x000000 }) );
+
+	let c, g;
+	g = new THREE.Geometry();
+	g.vertices.push(pos1, pos2);
+    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
     o.add(c);
+	g = new THREE.Geometry();
+	g.vertices.push(pos1, pos3);
+    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
+    o.add(c);
+	g = new THREE.Geometry();
+	g.vertices.push(pos3, pos2);
+    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
+    o.add(c);
+	g = new THREE.Geometry();
+	g.vertices.push(pos2, pos4);
+    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
+    o.add(c);
+	g = new THREE.Geometry();
+	g.vertices.push(pos1, pos4);
+    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
+    o.add(c);
+
+    g = new THREE.Geometry();
+	g.vertices.push(s, e);
+    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0x000000 }) );
+    o.add(c);
+
     o.name = "Dwelling_4";
     o.start =  () => { return s; }
     o.end = () => { return e; }
@@ -137,25 +184,66 @@ function Dwelling_6(start, end) {
 	let o = new THREE.Object3D();
 	let i;
 	let moveRMax = 0.1;
+	let pos1 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	let pos2 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	let pos3 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	let pos4 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	let pos5 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	let pos6 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
 	i = getDwellingSphere(getRandomInt(1));
-	i.position.set(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	i.position.set(pos1.x, pos1.y, pos1.z);
     o.add(i);
 	i = getDwellingSphere(getRandomInt(0));
-	i.position.set(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	i.position.set(pos2.x, pos2.y, pos2.z);
     o.add(i);
 	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	i.position.set(pos3.x, pos3.y, pos3.z);
     o.add(i);
 	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	i.position.set(pos4.x, pos4.y, pos4.z);
     o.add(i);
 	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	i.position.set(pos5.x, pos5.y, pos5.z);
     o.add(i);
 	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
+	i.position.set(pos6.x, pos6.y, pos6.z);
     o.add(i);
-	let g = new THREE.Geometry();
+
+	let c, g;
+	g = new THREE.Geometry();
+	g.vertices.push(pos1, pos2);
+    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
+    o.add(c);
+	g = new THREE.Geometry();
+	g.vertices.push(pos1, pos3);
+    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
+    o.add(c);
+	g = new THREE.Geometry();
+	g.vertices.push(pos3, pos2);
+    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
+    o.add(c);
+	g = new THREE.Geometry();
+	g.vertices.push(pos2, pos4);
+    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
+    o.add(c);
+	g = new THREE.Geometry();
+	g.vertices.push(pos1, pos4);
+    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
+    o.add(c);
+	g = new THREE.Geometry();
+	g.vertices.push(pos3, pos6);
+    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
+    o.add(c);
+	g = new THREE.Geometry();
+	g.vertices.push(pos1, pos6);
+    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
+    o.add(c);
+	g = new THREE.Geometry();
+	g.vertices.push(pos4, pos5);
+    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
+    o.add(c);
+
+    g = new THREE.Geometry();
 	g.vertices.push(s, e);
     let c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0x000000 }) );
     o.add(c);
@@ -354,7 +442,7 @@ function L3DApp() {
 
 	 
 	function init() {	 
-		camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 1000 );
+		camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10000 );
 		camera.position.z = 1;
 		scene = new THREE.Scene();
 		controls = new THREE.OrbitControls( camera );
