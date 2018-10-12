@@ -24,6 +24,14 @@ window.addEventListener('load', async function() {
 // -----------------------------------------
 
 
+function getRandomVectorInRange(max) {
+	return new THREE.Vector3(
+								getRandomFloatInRange(-max, max),
+								getRandomFloatInRange(-max, max),
+								getRandomFloatInRange(-max, max)
+							);
+}
+
 function getPointInBetweenByLen(pointA, pointB, percentage) {
     let dir = pointB.clone().sub(pointA);
     let len = dir.length();
@@ -55,9 +63,9 @@ function getDwellingSphere(i) {
 	let g, m, w, o;
 	o = new THREE.Object3D();
 	g = new THREE.SphereGeometry( sz, divs, divs );
-	let reg_mat = new THREE.MeshBasicMaterial({ color: 0x00abab });
+	let reg_mat = new THREE.MeshBasicMaterial({ color: 0xbcbcbc });
     m = new THREE.Mesh( g, reg_mat );
-    let wire_mat = new THREE.LineBasicMaterial( { color: 0x003333, linewidth: 4 } );
+    let wire_mat = new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 4 } );
     w = new THREE.LineSegments( g, wire_mat );
     o.add(m);
     o.add(w);
@@ -81,11 +89,11 @@ function Dwelling_3(start, end) {
 	let e = end;
 	let o = new THREE.Object3D();
 	let i;
-	let moveRMax = 0.1;
+	let moveRMax = 0.2;
 	let pos1 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
 	let pos2 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
 	let pos3 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
-	i = getDwellingSphere(getRandomInt(1));
+	i = getDwellingSphere(getRandomInt(2));
 	i.position.set(pos1.x, pos1.y, pos1.z);
     o.add(i);
 	i = getDwellingSphere(getRandomInt(2));
@@ -95,25 +103,23 @@ function Dwelling_3(start, end) {
 	i.position.set(pos3.x, pos3.y, pos3.z);
     o.add(i);
 
-	let c, g;
-	g = new THREE.Geometry();
-	g.vertices.push(pos1, pos2);
-    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
-    o.add(c);
-	g = new THREE.Geometry();
-	g.vertices.push(pos1, pos3);
-    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
-    o.add(c);
-	g = new THREE.Geometry();
-	g.vertices.push(pos3, pos2);
-    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
-    o.add(c);
+	let numPoints = 12;
+	let pipeMat = new THREE.MeshNormalMaterial();
+	let c, g, m;
+	c = new THREE.QuadraticBezierCurve3(pos1, pos2, pos3);
+	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.003, 0.008), 20, false);
+	m = new THREE.Mesh( g, pipeMat );
+	o.add( m );
+	c = new THREE.QuadraticBezierCurve3(pos2, pos1, pos3);
+	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.003, 0.008), 20, false);
+	m = new THREE.Mesh( g, pipeMat );
+	o.add( m );
 
-    g = new THREE.Geometry();
-	g.vertices.push(s, e);
-    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0x000000 }) );
+	c = new THREE.QuadraticBezierCurve3(s, getPointInBetweenByLen(s, e, 0.5).add(getRandomVectorInRange(0.4)), e);
+	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.01, 0.012), 20, false);
+	m = new THREE.Mesh( g, pipeMat );
+	o.add( m );
 
-    o.add(c);
     o.name = "Dwelling_4";
     o.start =  () => { return s; }
     o.end = () => { return e; }
@@ -126,15 +132,15 @@ function Dwelling_4(start, end) {
 	let e = end;
 	let o = new THREE.Object3D();
 	let i;
-	let moveRMax = 0.1;
+	let moveRMax = 0.2;
 	let pos1 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
 	let pos2 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
 	let pos3 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
 	let pos4 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
-	i = getDwellingSphere(getRandomInt(1));
+	i = getDwellingSphere(getRandomInt(2));
 	i.position.set(pos1.x, pos1.y, pos1.z);
     o.add(i);
-	i = getDwellingSphere(getRandomInt(0));
+	i = getDwellingSphere(getRandomInt(2));
 	i.position.set(pos2.x, pos2.y, pos2.z);
     o.add(i);
 	i = getDwellingSphere(getRandomInt(2));
@@ -144,32 +150,26 @@ function Dwelling_4(start, end) {
 	i.position.set(pos4.x, pos4.y, pos4.z);
     o.add(i);
 
-	let c, g;
-	g = new THREE.Geometry();
-	g.vertices.push(pos1, pos2);
-    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
-    o.add(c);
-	g = new THREE.Geometry();
-	g.vertices.push(pos1, pos3);
-    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
-    o.add(c);
-	g = new THREE.Geometry();
-	g.vertices.push(pos3, pos2);
-    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
-    o.add(c);
-	g = new THREE.Geometry();
-	g.vertices.push(pos2, pos4);
-    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
-    o.add(c);
-	g = new THREE.Geometry();
-	g.vertices.push(pos1, pos4);
-    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
-    o.add(c);
+	let numPoints = 12;
+	let pipeMat = new THREE.MeshNormalMaterial();
+	let c, g, m;
+	c = new THREE.QuadraticBezierCurve3(pos1, pos2, pos3);
+	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.003, 0.008), 20, false);
+	m = new THREE.Mesh( g, pipeMat );
+	o.add( m );
+	c = new THREE.QuadraticBezierCurve3(pos2, pos4, pos1);
+	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.003, 0.008), 20, false);
+	m = new THREE.Mesh( g, pipeMat );
+	o.add( m );
+	c = new THREE.QuadraticBezierCurve3(pos3, pos1, pos4);
+	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.003, 0.008), 20, false);
+	m = new THREE.Mesh( g, pipeMat );
+	o.add( m );
 
-    g = new THREE.Geometry();
-	g.vertices.push(s, e);
-    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0x000000 }) );
-    o.add(c);
+	c = new THREE.QuadraticBezierCurve3(s, getPointInBetweenByLen(s, e, 0.5).add(getRandomVectorInRange(0.4)), e);
+	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.01, 0.012), 20, false);
+	m = new THREE.Mesh( g, pipeMat );
+	o.add( m );
 
     o.name = "Dwelling_4";
     o.start =  () => { return s; }
@@ -177,23 +177,22 @@ function Dwelling_4(start, end) {
     return o;
 }
 
-
 function Dwelling_6(start, end) {
 	let s = start;
 	let e = end;
 	let o = new THREE.Object3D();
 	let i;
-	let moveRMax = 0.1;
+	let moveRMax = 0.2;
 	let pos1 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
 	let pos2 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
 	let pos3 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
 	let pos4 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
 	let pos5 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
 	let pos6 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
-	i = getDwellingSphere(getRandomInt(1));
+	i = getDwellingSphere(getRandomInt(2));
 	i.position.set(pos1.x, pos1.y, pos1.z);
     o.add(i);
-	i = getDwellingSphere(getRandomInt(0));
+	i = getDwellingSphere(getRandomInt(2));
 	i.position.set(pos2.x, pos2.y, pos2.z);
     o.add(i);
 	i = getDwellingSphere(getRandomInt(2));
@@ -209,44 +208,35 @@ function Dwelling_6(start, end) {
 	i.position.set(pos6.x, pos6.y, pos6.z);
     o.add(i);
 
-	let c, g;
-	g = new THREE.Geometry();
-	g.vertices.push(pos1, pos2);
-    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
-    o.add(c);
-	g = new THREE.Geometry();
-	g.vertices.push(pos1, pos3);
-    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
-    o.add(c);
-	g = new THREE.Geometry();
-	g.vertices.push(pos3, pos2);
-    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
-    o.add(c);
-	g = new THREE.Geometry();
-	g.vertices.push(pos2, pos4);
-    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
-    o.add(c);
-	g = new THREE.Geometry();
-	g.vertices.push(pos1, pos4);
-    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
-    o.add(c);
-	g = new THREE.Geometry();
-	g.vertices.push(pos3, pos6);
-    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
-    o.add(c);
-	g = new THREE.Geometry();
-	g.vertices.push(pos1, pos6);
-    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
-    o.add(c);
-	g = new THREE.Geometry();
-	g.vertices.push(pos4, pos5);
-    c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0xff0000 }) );
-    o.add(c);
+	let numPoints = 12;
+	let pipeMat = new THREE.MeshNormalMaterial();
+	let c, g, m;
+	c = new THREE.QuadraticBezierCurve3(pos1, pos2, pos3);
+	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.003, 0.008), 20, false);
+	m = new THREE.Mesh( g, pipeMat );
+	o.add( m );
+	c = new THREE.QuadraticBezierCurve3(pos2, pos4, pos6);
+	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.003, 0.008), 20, false);
+	m = new THREE.Mesh( g, pipeMat );
+	o.add( m );
+	c = new THREE.QuadraticBezierCurve3(pos6, pos1, pos4);
+	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.003, 0.008), 20, false);
+	m = new THREE.Mesh( g, pipeMat );
+	o.add( m );
+	c = new THREE.QuadraticBezierCurve3(pos3, pos1, pos5);
+	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.003, 0.008), 20, false);
+	m = new THREE.Mesh( g, pipeMat );
+	o.add( m );
+	c = new THREE.QuadraticBezierCurve3(pos2, pos4, pos1);
+	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.003, 0.008), 20, false);
+	m = new THREE.Mesh( g, pipeMat );
+	o.add( m );
 
-    g = new THREE.Geometry();
-	g.vertices.push(s, e);
-    let c = new THREE.Line( g, new THREE.LineBasicMaterial({ color: 0x000000 }) );
-    o.add(c);
+	c = new THREE.QuadraticBezierCurve3(s, getPointInBetweenByLen(s, e, 0.5).add(getRandomVectorInRange(0.4)), e);
+	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.01, 0.012), 20, false);
+	m = new THREE.Mesh( g, pipeMat );
+	o.add( m );
+
     o.name = "Dwelling_4";
     o.start =  () => { return s; }
     o.end = () => { return e; }
@@ -420,12 +410,17 @@ function ThreeBasicSys() {
 
 
 
+
+var scene;
+
+
+
 function L3DApp() {
 
 	let onRenderEvent = document.createEvent('Event');
 	onRenderEvent.initEvent('onRender', true, true);
 
-	let camera, scene, renderer;
+	let camera, renderer;
 	let controls;
 
 	let container = document.getElementById("app");
@@ -446,6 +441,10 @@ function L3DApp() {
 		camera.position.z = 1;
 		scene = new THREE.Scene();
 		controls = new THREE.OrbitControls( camera );
+
+		let light = new THREE.DirectionalLight( 0xffffff );
+		light.position.set( -1, 1, -1 ).normalize();
+		scene.add(light);
 
 		// let gridHelper = new THREE.GridHelper( 20, 100 );
 		// scene.add( gridHelper );
