@@ -24,14 +24,6 @@ window.addEventListener('load', async function() {
 // -----------------------------------------
 
 
-function getRandomVectorInRange(max) {
-	return new THREE.Vector3(
-								getRandomFloatInRange(-max, max),
-								getRandomFloatInRange(-max, max),
-								getRandomFloatInRange(-max, max)
-							);
-}
-
 function getPointInBetweenByLen(pointA, pointB, percentage) {
     let dir = pointB.clone().sub(pointA);
     let len = dir.length();
@@ -39,231 +31,84 @@ function getPointInBetweenByLen(pointA, pointB, percentage) {
     return pointA.clone().add(dir);
 }
 
-function getRandomFloatInRange(min, max) {
-    return Math.random() * (max - min) + min;
-}
 
-function getRandomPosNegFloat(max) {
-	return (Math.random()*max) * ((Math.random() < 0.5) ? 1 : -1);
-}
-
-function getRandomInt(max) {
-  return Math.floor(Math.random() * Math.floor(max));
+function getR(r) {
+	return (Math.random()*r) * ((Math.random() < 0.5) ? 1 : -1);
 }
 
 
 // -----------------------------------------
 
 
-function getDwellingSphere(i) {
-	let szs = [0.03, 0.04, 0.05];
-	let divss = [4, 5, 7];
-	let  sz = szs[i];
-	let divs = divss[i];
-	let g, m, w, o;
-	o = new THREE.Object3D();
-	g = new THREE.SphereGeometry( sz, divs, divs );
-	let reg_mat = new THREE.MeshBasicMaterial({ color: 0xbcbcbc });
-    m = new THREE.Mesh( g, reg_mat );
-    let wire_mat = new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 4 } );
-    w = new THREE.LineSegments( g, wire_mat );
-    o.add(m);
-    o.add(w);
-    o.rotation.set(Math.random(), Math.random(), Math.random());
-
-    let startY = o.position.y;
-    let endY = (getRandomFloatInRange(0.01, 0.02)) + startY;
-    let incr = getRandomFloatInRange(0.0003, 0.0004);
-
-	document.addEventListener('onRender', function (e) {
-		o.position.y += incr;
-		if (o.position.y < startY || o.position.y > endY) incr *= (-1);
-	}, false);
-
-    return o;
+function LineTurtle(start, end) {
+	let g, c;
+	let m = new THREE.LineBasicMaterial({ color: 0x000000 });
+	g = new THREE.Geometry();
+	g.vertices.push(start, end);
+    c = new THREE.Line( g, m );
+    c.name = "line";
+    c.start =  () => { return g.vertices[0]; }
+    c.end = () => { return g.vertices[1]; }
+    return c;
 }
 
 
-function Dwelling_3(start, end) {
-	let s = start;
-	let e = end;
-	let o = new THREE.Object3D();
-	let i;
-	let moveRMax = 0.2;
-	let pos1 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
-	let pos2 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
-	let pos3 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
-	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(pos1.x, pos1.y, pos1.z);
-    o.add(i);
-	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(pos2.x, pos2.y, pos2.z);
-    o.add(i);
-	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(pos3.x, pos3.y, pos3.z);
-    o.add(i);
-
-	let numPoints = 12;
-	let pipeMat = new THREE.MeshNormalMaterial();
-	let c, g, m;
-	c = new THREE.QuadraticBezierCurve3(pos1, pos2, pos3);
-	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.003, 0.008), 20, false);
-	m = new THREE.Mesh( g, pipeMat );
-	o.add( m );
-	c = new THREE.QuadraticBezierCurve3(pos2, pos1, pos3);
-	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.003, 0.008), 20, false);
-	m = new THREE.Mesh( g, pipeMat );
-	o.add( m );
-
-	c = new THREE.QuadraticBezierCurve3(s, getPointInBetweenByLen(s, e, 0.5).add(getRandomVectorInRange(0.4)), e);
-	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.01, 0.012), 20, false);
-	m = new THREE.Mesh( g, pipeMat );
-	o.add( m );
-
-    o.name = "Dwelling_4";
-    o.start =  () => { return s; }
-    o.end = () => { return e; }
-    return o;
+function BubbleLineTurtle(start, end) {
+	let os = new THREE.Object3D();
+	let g, c;
+	let m = new THREE.LineBasicMaterial({ color: 0x000000 });
+	g = new THREE.Geometry();
+	let mid = getPointInBetweenByLen(start, end, 0.5);
+	let d = end.distanceTo(start);
+	let r = 0.2 * d;
+	g.vertices.push(start, end);
+    os.add(new THREE.Line( g, m ));
+    os.name = "line";
+    os.start =  () => { return g.vertices[0]; }
+    os.end = () => { return g.vertices[1]; }
+    let sphere = new THREE.Mesh( new THREE.SphereGeometry( r, 16, 16 ), new THREE.MeshBasicMaterial( {color: 0xffffff * Math.random()} ) );
+    sphere.position.set(mid.x, mid.y, mid.z);
+    os.add(sphere);
+    return os;
 }
 
 
-function Dwelling_4(start, end) {
-	let s = start;
-	let e = end;
-	let o = new THREE.Object3D();
-	let i;
-	let moveRMax = 0.2;
-	let pos1 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
-	let pos2 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
-	let pos3 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
-	let pos4 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
-	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(pos1.x, pos1.y, pos1.z);
-    o.add(i);
-	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(pos2.x, pos2.y, pos2.z);
-    o.add(i);
-	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(pos3.x, pos3.y, pos3.z);
-    o.add(i);
-	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(pos4.x, pos4.y, pos4.z);
-    o.add(i);
-
-	let numPoints = 12;
-	let pipeMat = new THREE.MeshNormalMaterial();
-	let c, g, m;
-	c = new THREE.QuadraticBezierCurve3(pos1, pos2, pos3);
-	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.003, 0.008), 20, false);
-	m = new THREE.Mesh( g, pipeMat );
-	o.add( m );
-	c = new THREE.QuadraticBezierCurve3(pos2, pos4, pos1);
-	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.003, 0.008), 20, false);
-	m = new THREE.Mesh( g, pipeMat );
-	o.add( m );
-	c = new THREE.QuadraticBezierCurve3(pos3, pos1, pos4);
-	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.003, 0.008), 20, false);
-	m = new THREE.Mesh( g, pipeMat );
-	o.add( m );
-
-	c = new THREE.QuadraticBezierCurve3(s, getPointInBetweenByLen(s, e, 0.5).add(getRandomVectorInRange(0.4)), e);
-	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.01, 0.012), 20, false);
-	m = new THREE.Mesh( g, pipeMat );
-	o.add( m );
-
-    o.name = "Dwelling_4";
-    o.start =  () => { return s; }
-    o.end = () => { return e; }
-    return o;
-}
-
-function Dwelling_6(start, end) {
-	let s = start;
-	let e = end;
-	let o = new THREE.Object3D();
-	let i;
-	let moveRMax = 0.2;
-	let pos1 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
-	let pos2 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
-	let pos3 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
-	let pos4 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
-	let pos5 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
-	let pos6 = new THREE.Vector3(end.x + getRandomPosNegFloat(moveRMax), end.y + getRandomPosNegFloat(moveRMax*0.07), end.z + getRandomPosNegFloat(moveRMax));
-	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(pos1.x, pos1.y, pos1.z);
-    o.add(i);
-	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(pos2.x, pos2.y, pos2.z);
-    o.add(i);
-	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(pos3.x, pos3.y, pos3.z);
-    o.add(i);
-	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(pos4.x, pos4.y, pos4.z);
-    o.add(i);
-	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(pos5.x, pos5.y, pos5.z);
-    o.add(i);
-	i = getDwellingSphere(getRandomInt(2));
-	i.position.set(pos6.x, pos6.y, pos6.z);
-    o.add(i);
-
-	let numPoints = 12;
-	let pipeMat = new THREE.MeshNormalMaterial();
-	let c, g, m;
-	c = new THREE.QuadraticBezierCurve3(pos1, pos2, pos3);
-	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.003, 0.008), 20, false);
-	m = new THREE.Mesh( g, pipeMat );
-	o.add( m );
-	c = new THREE.QuadraticBezierCurve3(pos2, pos4, pos6);
-	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.003, 0.008), 20, false);
-	m = new THREE.Mesh( g, pipeMat );
-	o.add( m );
-	c = new THREE.QuadraticBezierCurve3(pos6, pos1, pos4);
-	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.003, 0.008), 20, false);
-	m = new THREE.Mesh( g, pipeMat );
-	o.add( m );
-	c = new THREE.QuadraticBezierCurve3(pos3, pos1, pos5);
-	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.003, 0.008), 20, false);
-	m = new THREE.Mesh( g, pipeMat );
-	o.add( m );
-	c = new THREE.QuadraticBezierCurve3(pos2, pos4, pos1);
-	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.003, 0.008), 20, false);
-	m = new THREE.Mesh( g, pipeMat );
-	o.add( m );
-
-	c = new THREE.QuadraticBezierCurve3(s, getPointInBetweenByLen(s, e, 0.5).add(getRandomVectorInRange(0.4)), e);
-	g = new THREE.TubeGeometry(c, numPoints, getRandomFloatInRange(0.01, 0.012), 20, false);
-	m = new THREE.Mesh( g, pipeMat );
-	o.add( m );
-
-    o.name = "Dwelling_4";
-    o.start =  () => { return s; }
-    o.end = () => { return e; }
-    return o;
+function StiltedTurtle(start, end) {
+	let g, c;
+	let m = new THREE.LineBasicMaterial({ color: 0x000000 });
+	g = new THREE.Geometry();
+	let mid = getPointInBetweenByLen(start, end, 0.5);
+	let d = end.distanceTo(start);
+	let r = 0.3 * d;
+	mid.add(new THREE.Vector3(getR(r), getR(r), getR(r)));
+	g.vertices.push(start, mid, end);
+    c = new THREE.Line( g, m );
+    c.name = "line";
+    c.start =  () => { return g.vertices[0]; }
+    c.end = () => { return g.vertices[2]; }
+    return c;
 }
 
 
 // -----------------------------------------
 
 
-function KevTree_22() {
+function RuleSetLine_2D_45Turn() {
 	this.run = (i, parent, turtle) => 	{
-									let lengthMul = 0.85;
 									let r = [];
 									let c;
-								    let axis = new THREE.Vector3( 0, 1, 0 );
-								    let angle = Math.PI * 0.125;
+								    let axis = new THREE.Vector3( 1, 0, 0 );
+								    let angle = Math.PI / 4;
 								    let src = parent.end().clone();
 								    let v1 = parent.end().clone().sub(parent.start());
 								    v1.applyAxisAngle( axis, angle );
-								    v1.multiplyScalar(lengthMul);
+								    v1.multiplyScalar(0.5);
 								    let e1 = parent.end().clone().add(v1);
 									c = new turtle(src, e1);
 								    r.push(c);
 								    let v2 = parent.end().clone().sub(parent.start());
 								    v2.applyAxisAngle( axis, -angle );
-								    v2.multiplyScalar(lengthMul);
+								    v2.multiplyScalar(0.5);
 								    let e2 = parent.end().clone().add(v2);
 									c = new turtle(src, e2);
 								    r.push(c);
@@ -272,48 +117,60 @@ function KevTree_22() {
 }
 
 
-function KevTree_45() {
+function RuleSetLine_3D_45Turn() {
 	this.run = (i, parent, turtle) => 	{
-									let lengthMul = 0.85;
 									let r = [];
 									let c;
-								    let axis = new THREE.Vector3( 0, 1, 0 );
-								    let angle = Math.PI * 0.25;
+								    let axis;
+								    axis = new THREE.Vector3( 1, 0, 0 )
+								    let angle = Math.PI / 4;
 								    let src = parent.end().clone();
 								    let v1 = parent.end().clone().sub(parent.start());
 								    v1.applyAxisAngle( axis, angle );
-								    v1.multiplyScalar(lengthMul);
+								    v1.multiplyScalar(0.5);
 								    let e1 = parent.end().clone().add(v1);
 									c = new turtle(src, e1);
 								    r.push(c);
 								    let v2 = parent.end().clone().sub(parent.start());
 								    v2.applyAxisAngle( axis, -angle );
-								    v2.multiplyScalar(lengthMul);
+								    v2.multiplyScalar(0.5);
 								    let e2 = parent.end().clone().add(v2);
 									c = new turtle(src, e2);
+								    r.push(c);
+								    axis = new THREE.Vector3( 0, 0, 1 );
+								    let v3 = parent.end().clone().sub(parent.start());
+								    v3.applyAxisAngle( axis, angle );
+								    v3.multiplyScalar(0.5);
+								    let e3 = parent.end().clone().add(v3);
+									c = new turtle(src, e3);
+								    r.push(c);
+								    let v4 = parent.end().clone().sub(parent.start());
+								    v4.applyAxisAngle( axis, -angle );
+								    v4.multiplyScalar(0.5);
+								    let e4 = parent.end().clone().add(v4);
+									c = new turtle(src, e4);
 								    r.push(c);
 									return r;
 								}
 }
 
 
-function KevTree_120() {
+function RuleSetLine_2D_23Turn() {
 	this.run = (i, parent, turtle) => 	{
-									let lengthMul = 0.85;
 									let r = [];
 									let c;
-								    let axis = new THREE.Vector3( 0, 1, 0 );
-								    let angle = Math.PI * 0.67;
+								    let axis = new THREE.Vector3( 1, 0, 0 );
+								    let angle = Math.PI / 8;
 								    let src = parent.end().clone();
 								    let v1 = parent.end().clone().sub(parent.start());
 								    v1.applyAxisAngle( axis, angle );
-								    v1.multiplyScalar(lengthMul);
+								    v1.multiplyScalar(0.5);
 								    let e1 = parent.end().clone().add(v1);
 									c = new turtle(src, e1);
 								    r.push(c);
 								    let v2 = parent.end().clone().sub(parent.start());
 								    v2.applyAxisAngle( axis, -angle );
-								    v2.multiplyScalar(lengthMul);
+								    v2.multiplyScalar(0.5);
 								    let e2 = parent.end().clone().add(v2);
 									c = new turtle(src, e2);
 								    r.push(c);
@@ -373,35 +230,34 @@ function ThreeBasicSys() {
 	this.d = 1;
 
 	this.axiom = function() {
-								let c = new currentTurtleType(new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, 0, this.d ));
-								let d = new currentTurtleType(new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, 0, -this.d ));
-								return [c, d];
+								let c = new currentTurtleType(new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, this.d, 0 ));
+								return [c];
 							};
 
 	this.setTurtle = function (turtleName) {
 		switch(turtleName) {
-			case 'Dwelling_3': { currentTurtleType = Dwelling_3; break; }
-			case 'Dwelling_4': { currentTurtleType = Dwelling_4; break; }
-			case 'Dwelling_6': { currentTurtleType = Dwelling_6; break; }
-			default: { currentTurtleType = Dwelling_4; }
+			case 'Straight Line': { currentTurtleType = LineTurtle; break; }
+			case 'Stilted Line': { currentTurtleType = StiltedTurtle; break; }
+			case 'Bubble Line': { currentTurtleType = BubbleLineTurtle; break; }
+			default: { currentTurtleType = LineTurtle; }
 		}
 	}
 
 	this.setRuleset = function (rulesetName) {
 		// console.log(rulesetName);
 		switch(rulesetName) {
-			case 'KevTree_22': { ruleSet = new KevTree_22(); break; }
-			case 'KevTree_45': { ruleSet = new KevTree_45(); break; }
-			case 'KevTree_120': { ruleSet = new KevTree_120(); break; }
-			default: { ruleSet = new KevTree_45(); }
+			case '2-45': { ruleSet = new RuleSetLine_2D_45Turn(); break; }
+			case '4-45': { ruleSet = new RuleSetLine_3D_45Turn(); break; }
+			case '2-23': { ruleSet = new RuleSetLine_2D_23Turn(); break; }
+			default: { ruleSet = new RuleSetLine_2D_45Turn(); }
 		}
 	}
 
 	this.getCurrentTurtleType = function() { return currentTurtleType; }
 	this.getRuleSet = function() { return ruleSet; }
 
-	this.setTurtle('Dwelling_4');
-	this.setRuleset('KevTree_45');
+	this.setTurtle(StiltedTurtle);
+	this.setRuleset(RuleSetLine_3D_45Turn);
 }
 
 
@@ -410,17 +266,9 @@ function ThreeBasicSys() {
 
 
 
-
-var scene;
-
-
-
 function L3DApp() {
 
-	let onRenderEvent = document.createEvent('Event');
-	onRenderEvent.initEvent('onRender', true, true);
-
-	let camera, renderer;
+	let camera, scene, renderer;
 	let controls;
 
 	let container = document.getElementById("app");
@@ -437,17 +285,13 @@ function L3DApp() {
 
 	 
 	function init() {	 
-		camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10000 );
+		camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 1000 );
 		camera.position.z = 1;
 		scene = new THREE.Scene();
 		controls = new THREE.OrbitControls( camera );
 
-		let light = new THREE.DirectionalLight( 0xffffff );
-		light.position.set( -1, 1, -1 ).normalize();
-		scene.add(light);
-
-		// let gridHelper = new THREE.GridHelper( 20, 100 );
-		// scene.add( gridHelper );
+		let gridHelper = new THREE.GridHelper( 20, 100 );
+		scene.add( gridHelper );
 
 		renderer = new THREE.WebGLRenderer( { antialias: true } );
 		renderer.setSize( window.innerWidth, window.innerHeight );
@@ -461,7 +305,6 @@ function L3DApp() {
 	    requestAnimationFrame( animate );
 	    controls.update();	 
 	    renderer.render( scene, camera );
-	    document.dispatchEvent(onRenderEvent);
 	}
 
 
